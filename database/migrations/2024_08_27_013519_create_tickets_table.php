@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('status', ['Abierto','En proceso', 'Cerrado', 'Pendiente', 'Resuelto'])->default('Abierto');
             $table->enum('priority', ['Baja', 'Media', 'Alta', 'Urgente'])->default('Baja');
+            $table->enum('satisfied', ['Sin responder', 'Excelente', 'Buena', 'Regular', 'Mal'])->default('Sin responder');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('assignee_id')->nullable();
             $table->timestamps();

@@ -1,22 +1,24 @@
 <template>
-  <h2>Tickets: </h2>
   <ag-grid-vue @grid-ready="onGridReady" :gridOptions="gridOptions" @rowClicked="onRowClicked($event)" :key="rowData.id"
     :defaultColDef="defaultColDef" :rowData="rowData" :columnDefs="colDefs" style="height: 500px"
+    :pagination="true"
     class="ag-theme-quartz">
   </ag-grid-vue>
 </template>
 
 <script setup>
-import { ref, shallowRef, onMounted, watch, defineComponent } from 'vue';
+import { ref, shallowRef, onMounted, watch } from 'vue';
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the Data Grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the Data Grid
 import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
 import customButton from '@/Components/customButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SelectView from '@/Components/SelectView.vue';
+import StatisfiedView from '@/Components/StatisfiedView.vue';
 
 
 const props = defineProps(['tickets']);
+
 const gridApi = shallowRef();
 /* function formatDate(dateString) {
   const date = new Date(dateString);
@@ -32,13 +34,14 @@ const gridOptions = {
   // Prevent deselection of previously selected rows when clicking on a new row
   suppressRowDeselection: true,
 };
-console.log(props.tickets.tickets)
 
 
-const rowData = ref([]);
+const rowData = ref(props.tickets ?? []);
+
 watch(
   () => props.tickets.tickets,
   () => {
+    
     rowData.value = props.tickets.tickets;
 
   }
@@ -49,14 +52,17 @@ const defaultColDef = ref({
   flex: 1,
 });
 
+const row = ref({})
 // Column Definitions: Defines the columns to be displayed.
 const colDefs = ref([
-  { field: "id", headerName: 'ID', maxWidth: 50, },
-  { field: "created_at", headerName: 'Fecha', maxWidth: 100, },
-  { field: "title", headerName: 'Titulo', },
+  
+  { field: "id", headerName: 'ID', maxWidth: 50,  },
+  { field: "created_at", headerName: 'Fecha', maxWidth: 150, },
+  { field: "title", headerName: 'Titulo', filter: "agTextColumnFilter" },
   { field: "description", headerName: 'Descrpción', },
   {
     field: "status",
+    filter: "agTextColumnFilter",
     headerName: 'Estatus', maxWidth: 200,
     editable: true,
     cellRenderer: 'SelectView',
@@ -90,6 +96,21 @@ const colDefs = ref([
   },
   { field: "user.name", headerName: 'Solicita', },
   { field: "assignee.name", headerName: 'Atiende', },
+  {field: 'satisfied', headerName: 'Satisfacción',
+  cellRenderer: 'StatisfiedView',
+    cellRendererParams: {
+      values: ['Sin responder', 'Mal', 'Regular', 'Bien', 'Excelente'], // Puedes pasar parámetros adicionales si es necesario
+      name: 'satisfied',
+      data: row 
+    },
+    cellClassRules: {
+      'status-cell status-open rounded-md': params => params.value == 'Mal', // Change color if value > 20
+      'status-cell status-progress rounded-md': params => params.value == 'Regular', // Change color if value > 20
+      'status-cell status-pending rounded-md': params => params.value == 'Buena', // Change color if value > 20
+      'status-cell status-done rounded-md': params => params.value == 'Excelente', // Change color if value > 20
+      'status-cell status-no-response rounded-md': params => params.value == 'Sin responder', // Change color if value > 20
+    }
+  },
 ]);
 
 const onGridReady = (params) => {
@@ -105,7 +126,7 @@ const onGridReady = (params) => {
 };
 
 onMounted(() => {
-  rowData.value = props.tickets.tickets
+  rowData.value = props.tickets
 })
 function onRowClicked(params) {
   // Access the selected row ID, node, or data
@@ -114,7 +135,7 @@ function onRowClicked(params) {
 }
 
 // expose the custom cell renderer for use within AG Grid
-defineExpose({ customButton, PrimaryButton, SelectView })
+defineExpose({ customButton, PrimaryButton, SelectView, StatisfiedView })
 </script>
 
 
@@ -153,6 +174,11 @@ tbody tr {
 .status-done {
   background: #13b961;
   color: #13b961;
+  /* Azul para "Resuelto" */
+}
+.status-no-response {
+  background: #245555;
+  color: #fff;
   /* Azul para "Resuelto" */
 }
 </style>
