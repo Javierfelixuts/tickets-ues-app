@@ -69,9 +69,7 @@ class TicketController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'string|max:255',
-            'priority' => 'required',
-            'status' => 'required',
-            'assignee_id' => 'required',
+            
         ]);
 
         $request->user()->tickets()->create($validated)->with(['message' => [
