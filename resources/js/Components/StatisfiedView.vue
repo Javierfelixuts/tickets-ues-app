@@ -1,7 +1,7 @@
 <template>
     
 
-    <div v-once v-if="params.data.status == 'Resuelto'">
+    <div v-if="params.data.status == 'Resuelto'">
         <select
             class="border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             v-model="currentValue" @change="onChange">
@@ -9,12 +9,12 @@
         </select>
     </div>
     <div v-else class="px-2">
-        <div>Sin responder</div>
+        <div>{{params.value}}</div>
     </div>
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, defineExpose } from 'vue';
+import { ref, defineProps, defineEmits, watch, defineExpose } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 // Define las propiedades del componente
 /* props que debes de mandar en ag grid
@@ -30,7 +30,13 @@ const props = defineProps({
         required: true
     },
 });
+
+
 const currentValue = ref(props.params.value);
+console.log("params: ", props.params)
+
+console.log("Satisfied; ")
+console.log("props; ", props.params.data)
 const emit = defineEmits(['valueChange']);
 
 const form = useForm({
@@ -49,10 +55,10 @@ const onChange = (event) => {
 };
 
 // Actualiza currentValue cuando props.value cambia
-/* watch(() => props.params, (newValue) => {
+watch(() => props.params, (newValue) => {
     console.log("wooow");
     currentValue.value = newValue;
-}); */
+});
 
 // Implementa getValue() para que AG Grid pueda obtener el valor del componente
 const getValue = () => {

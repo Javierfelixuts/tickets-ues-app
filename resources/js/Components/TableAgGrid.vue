@@ -36,13 +36,13 @@ const gridOptions = {
 };
 
 
-const rowData = ref(props.tickets ?? []);
+const rowData = ref([]);
 
 watch(
-  () => props.tickets.tickets,
+  () => props.tickets,
   () => {
     
-    rowData.value = props.tickets.tickets;
+    rowData.value = props.tickets;
 
   }
 )
@@ -67,7 +67,7 @@ const colDefs = ref([
     editable: true,
     cellRenderer: 'SelectView',
     cellRendererParams: {
-      values: ['Abierto', 'En proceso', 'Pendiente', 'Resuelto'], // Puedes pasar parámetros adicionales si es necesario
+      values: ['Abierto', 'En proceso', 'Pendiente', 'Resuelto', 'Cerrado'], // Puedes pasar parámetros adicionales si es necesario
       name: 'status'
     },
 
@@ -77,6 +77,7 @@ const colDefs = ref([
       'status-cell status-progress rounded-md': params => params.value == 'En proceso', // Change color if value > 20
       'status-cell status-pending rounded-md': params => params.value == 'Pendiente', // Change color if value > 20
       'status-cell status-done rounded-md': params => params.value == 'Resuelto', // Change color if value > 20
+      'status-cell status-close rounded-md': params => params.value == 'Cerrado', // Change color if value > 20
     }
   },
   {
@@ -97,18 +98,17 @@ const colDefs = ref([
   { field: "user.name", headerName: 'Solicita', },
   { field: "assignee.name", headerName: 'Atiende', },
   {field: 'satisfied', headerName: 'Satisfacción',
-  cellRenderer: 'StatisfiedView',
     cellRendererParams: {
-      values: ['Sin responder', 'Mal', 'Regular', 'Bien', 'Excelente'], // Puedes pasar parámetros adicionales si es necesario
+      values: ['Sin responder', 'Mal', 'Regular', 'Buena', 'Excelente'], // Puedes pasar parámetros adicionales si es necesario
       name: 'satisfied',
       data: row 
     },
     cellClassRules: {
-      'status-cell status-open rounded-md': params => params.value == 'Mal', // Change color if value > 20
+      'status-cell status-open text-white rounded-md': params => params.value == 'Mal', // Change color if value > 20
       'status-cell status-progress rounded-md': params => params.value == 'Regular', // Change color if value > 20
       'status-cell status-pending rounded-md': params => params.value == 'Buena', // Change color if value > 20
       'status-cell status-done rounded-md': params => params.value == 'Excelente', // Change color if value > 20
-      'status-cell status-no-response rounded-md': params => params.value == 'Sin responder', // Change color if value > 20
+      'status-cell rounded-md': params => params.value == 'Sin responder', // Change color if value > 20
     }
   },
 ]);
@@ -155,29 +155,34 @@ tbody tr {
 
 .status-open {
   background: #3795BD;
-  color: #3795BD;
+  color: #fff;
   /* Verde para "Abierto" */
 }
 
 .status-progress {
   background: #FF9100;
-  color: #FF9100;
+  color: #fff;
   /* Rojo para "Cerrado" */
 }
 
 .status-pending {
   background: #4A249D;
-  color: #4A249D;
+  color: #fff;
   /* Rojo para "Cerrado" */
 }
 
 .status-done {
   background: #13b961;
-  color: #13b961;
+  color: #fff;
+  /* Azul para "Resuelto" */
+}
+.status-close {
+  background: #b86d1c;
+  color: #fff;
   /* Azul para "Resuelto" */
 }
 .status-no-response {
-  background: #245555;
+  background: #7bc513;
   color: #fff;
   /* Azul para "Resuelto" */
 }

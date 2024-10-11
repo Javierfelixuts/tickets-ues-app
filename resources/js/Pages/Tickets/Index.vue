@@ -8,6 +8,7 @@ import { ref, defineProps } from 'vue';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { useForm, Head } from '@inertiajs/vue3';
 import TableAgGrid from '@/Components/TableAgGrid.vue';
+import TableTicketsCreators from '@/Components/TableTicketsCreators.vue';
 import axios from 'axios';
 const props = defineProps(['users', 'tickets', 'start_date', 'end_date']);
 
@@ -15,8 +16,7 @@ const form = useForm({
     title: '',
     description: '',
     status: 'Abierto',
-    priority: '',
-    assignee_id: '',
+    
 });
 
 const filterByDate = useForm({
@@ -78,13 +78,13 @@ const resetFilters = () => {
 
                     <textarea id="description" name="description" v-model="form.description" placeholder="Descripción"
                         class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"></textarea>
-
+                    <!--
                     <InputLabel for="prioridad" value="Prioridad" />
-                    <!-- <select   v-model="form.status" class="my-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" name="status" id="status">
+                     <select   v-model="form.status" class="my-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" name="status" id="status">
                     <option selected>Set status</option>
                     <option    v-for="st of ['Abierto','En proceso', 'Cerrado', 'Pendiente', 'Resuelto']" :value="st">{{ st }}</option>
                 </select> -->
-                    <select v-model="form.priority"
+                    <!-- <select v-model="form.priority"
                         class="my-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         name="prority" id="prority">
                         <option v-for="pr of ['Baja', 'Media', 'Alta', 'Urgente']" :value="pr">{{ pr }}</option>
@@ -94,7 +94,7 @@ const resetFilters = () => {
                         class="my-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         name="user" id="user">
                         <option v-for="user of users" :value="user.id">{{ user.name }}</option>
-                    </select>
+                    </select> -->
                     <InputError :message="form.errors.message" class="mt-2" />
                     <PrimaryButton class="mt-4" @click="isModalOpen = false">Crear</PrimaryButton>
 
@@ -102,7 +102,7 @@ const resetFilters = () => {
 
             </div>
         </Modal>
-        <div class="block ">
+        <div v-if="$page.props.auth.user.role_id != 1" class="block ">
 
             <input v-model="filterByDate.start_date" class="m-2" type="date">
             <input v-model="filterByDate.end_date" class="m-2" type="date">
@@ -118,7 +118,12 @@ const resetFilters = () => {
         <progress v-if="filterByDate.progress" :value="filterByDate.progress.percentage" max="100">
             {{ filterByDate.progress.percentage }}%
         </progress>
-        <TableAgGrid :tickets="tickets" ></TableAgGrid> 
-
+        
+        <div v-if="$page.props.auth.user.role_id != 1">
+            <TableAgGrid :tickets="tickets" ></TableAgGrid> 
+        </div>
+        <div v-else>
+            <TableTicketsCreators :tickets="tickets"></TableTicketsCreators>
+        </div>
     </AuthenticatedLayout>
 </template>
